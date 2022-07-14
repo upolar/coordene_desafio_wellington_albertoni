@@ -103,24 +103,37 @@ export default {
     /* Obtem a transportadora mais rápida e a mais barata e adiciona no HTML a informação. */
     var result = document.getElementById("result");
     var group = this.getGroupCitySelected();
-    let cheaperHTML = null;
+    let cheaperHTML = '';
+    let fasterHTML = '';
     let cheaper = null;
-
+    let faster = null;
+    
+    
     if (group && this.peso > 0) {
       let is_peso_heavy = this.peso > 100;
       let price_cheaper; 
-
+      let price_faster;
+      
       let localeBrlToFixed = (val, fixed=2) => { // Arredonda para 2 casas decimais e retorna formatado em BRL Currency
         return Number(val.toFixed(fixed)).toLocaleString("pt-BR", {style:"currency", currency: "BRL"})
       };
 
       cheaper = this.getCheaper(group, is_peso_heavy);
-      price_cheaper = localeBrlToFixed(this.getPrice(cheaper, is_peso_heavy) * this.peso)
+      faster = this.getFaster(group);
 
-      cheaperHTML = `<p>Frete mais barato: <strong>Transportadora ${cheaper['name']} - ${price_cheaper} - ${cheaper['lead_time']}</strong></p>`
-
+      price_cheaper = localeBrlToFixed(this.getPrice(cheaper, is_peso_heavy) * this.peso);
+      if (faster['lead_time'] == cheaper['lead_time']) {
+        fasterHTML = `<p> Nós não temos uma opção de frete mais rápido disponível :( </p>`
+      } else {
+        price_faster = localeBrlToFixed(this.getPrice(faster, is_peso_heavy) * this.peso);
+        fasterHTML = `<p> Frete mais rápido: <strong>Transportadora ${faster['name']} - ${price_faster} - ${faster['lead_time']}</strong></p>`;
+      }
+      
+      cheaperHTML = `<p>Frete mais barato: <strong>Transportadora ${cheaper['name']} - ${price_cheaper} - ${cheaper['lead_time']}</strong></p>`;
     }
-    result.innerHTML = cheaperHTML
+
+    result.innerHTML = cheaperHTML + fasterHTML
+    
    },
    
   getPrice(item, heavy) {
@@ -134,18 +147,31 @@ export default {
 
   getCheaper(group, heavy) {
     /* Retorna o frete mais barato dentre as transportadoras do grupo */
-    let cheaper = group[0]
-    let price_chp = this.getPrice(cheaper, heavy)
+    let cheaper = group[0];
+    let price_chp = this.getPrice(cheaper, heavy);3
 
     for (var item in group) {  
       let tmp_price = this.getPrice(group[item], heavy)
       if (tmp_price < price_chp) {
-        price_chp = tmp_price
-        cheaper = group[item]
+        price_chp = tmp_price;
+        cheaper = group[item];
       }
     }
-    return cheaper
+    return cheaper;
   },
+  getFaster(group) {
+    let faster = group[0];
+    var lead_time = (val) => {return val['lead_time'].replace(/[^0-9]/g, "")}
+
+    for (var item in group) {  
+      let tmp_time = lead_time(group[item]);
+
+      if (Number(lead_time(faster)) > Number(tmp_time)) {
+        faster = group[item];
+      }
+    }
+    return faster
+  }
   },
 }
 </script>
