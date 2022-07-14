@@ -25,12 +25,25 @@ export default {
 
     return {
       appName,
+      cities: []
     }
   },
   created() {
     // Implemente aqui o GET dos dados da API REST
     // para que isso ocorra na inicialização da pagina
     this.appName = 'Melhor Frete'
+    let target = 'http://localhost:3000/transport'
+
+    const options = {
+      method: 'GET',
+      header: {
+        Accept: "application/json",
+        "Content-Type": "application/json; charset=utf-8",
+      }
+    }
+    
+    this.cities = fetch(target, options)
+      .then((response) => response.json())
   },
   methods: {
     // Implemente aqui os metodos utilizados na pagina
