@@ -122,14 +122,15 @@ export default {
       faster = this.getFaster(group);
 
       price_cheaper = localeBrlToFixed(this.getPrice(cheaper, is_peso_heavy) * this.peso);
-      if (faster['lead_time'] == cheaper['lead_time']) {
+      cheaperHTML = `<p>Frete mais barato: <strong>Transportadora ${cheaper['name']} - ${price_cheaper} - ${cheaper['lead_time']}</strong></p>`;
+
+      // Se o tempo do mais rápido e do mais barato forem iguais não existe tempo mais rápido.
+      if (faster['lead_time'] == cheaper['lead_time']) {   
         fasterHTML = `<p> Nós não temos uma opção de frete mais rápido disponível :( </p>`
       } else {
         price_faster = localeBrlToFixed(this.getPrice(faster, is_peso_heavy) * this.peso);
         fasterHTML = `<p> Frete mais rápido: <strong>Transportadora ${faster['name']} - ${price_faster} - ${faster['lead_time']}</strong></p>`;
       }
-      
-      cheaperHTML = `<p>Frete mais barato: <strong>Transportadora ${cheaper['name']} - ${price_cheaper} - ${cheaper['lead_time']}</strong></p>`;
     }
 
     result.innerHTML = cheaperHTML + fasterHTML
