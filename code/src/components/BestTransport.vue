@@ -10,27 +10,43 @@
 
     <div id="frete" class="frete">
       <div class="forms">
-
-        <div class="destino">
-          <h4>Destino</h4>
+        <h1>Como é o frete que você precisa?</h1>
+        <hr>
+        <div class="destino mt-3">
+          <h3>Destino</h3>
           <select v-model="selected">
             <option disabled value="" selected>Escolha uma cidade</option>
             <option v-for="city in getCities" :key="city" required> {{city}}</option>
           </select> 
         </div> 
 
-        <div class="peso">
-          <h4>Peso</h4>
+        <div class="peso mt-3">
+          <h3>Peso</h3>
           <input v-model.number="peso"/>
         </div>
 
-        <button v-on:click="getAlternatives">Analisar</button>
+        <b-button v-on:click="getAlternatives" class="mt-3">Analisar</b-button>
 
-        <div id="result"></div>
+        <div id="result" class="mt-3" style="display: none">
+          <h4>Estas são as melhores alternativas de frete que encontramos para você.</h4>
+          <hr>
+          <div id="cheaper" class="alternative mt-4">
+            <b-icon icon="coin" ></b-icon>
+            <div id="csec">
+            </div>
+          </div>
+
+          <div id="faster" class="alternative mt-4">
+            <b-iconstack>
+              <b-icon stacked icon="list-nested" shift-h="-8" rotate="180"></b-icon>
+              <b-icon stacked icon="stopwatch"></b-icon>
+            </b-iconstack>
+            <div id="fsec" >
+            </div>
+          </div>
+        </div>
       </div>
-      
     </div>
-
   </div>
   
 
@@ -39,13 +55,17 @@
 <script>
 import {
   BNavbar,
-  BNavbarBrand
+  BNavbarBrand,
+  BIcon,
+  BIconstack
 } from 'bootstrap-vue'
 
 export default {
   components: {
     BNavbar,
-    BNavbarBrand
+    BNavbarBrand,
+    BIcon,
+    BIconstack
   },
   data() {
       const appName = ''
@@ -99,40 +119,44 @@ export default {
 
    getAlternatives() {
     /* Obtem a transportadora mais rápida e a mais barata e adiciona no HTML a informação. */
-    var result = document.getElementById("result");
+    var result = document.getElementById("result")
+    var cheaper = document.getElementById("csec");
+    var faster = document.getElementById("fsec")
+    
     var group = this.getGroupCitySelected();
+
     let cheaperHTML = '';
     let fasterHTML = '';
-    let cheaper = null;
-    let faster = null;
+    let cheaperItem = null;
+    let fasterItem = null;
     
     
     if (group && this.peso > 0) {
-      let is_peso_heavy = this.peso > 100;
-      let price_cheaper; 
-      let price_faster;
+      let isPesoHeavy = this.peso > 100;
+      let priceCheaper;
+      let priceFaster;
       
       let localeBrlToFixed = (val, fixed=2) => { // Arredonda para 2 casas decimais e retorna formatado em BRL Currency
         return Number(val.toFixed(fixed)).toLocaleString("pt-BR", {style:"currency", currency: "BRL"})
       };
 
-      cheaper = this.getCheaper(group, is_peso_heavy);
-      faster = this.getFaster(group);
+      cheaperItem = this.getCheaper(group, isPesoHeavy);
+      fasterItem = this.getFaster(group);
 
-      price_cheaper = localeBrlToFixed(this.getPrice(cheaper, is_peso_heavy) * this.peso);
-      cheaperHTML = `<p>Frete mais barato: <strong>Transportadora ${cheaper['name']} - ${price_cheaper} - ${cheaper['lead_time']}</strong></p>`;
+      priceCheaper = localeBrlToFixed(this.getPrice(cheaperItem, isPesoHeavy) * this.peso);
+      cheaperHTML = `Frete mais barato: <strong>Transportadora ${cheaperItem['name']} - ${priceCheaper} - ${cheaperItem['lead_time']}</strong>`;
 
       // Se o tempo do mais rápido e do mais barato forem iguais não existe tempo mais rápido.
-      if (faster['lead_time'] == cheaper['lead_time']) {   
-        fasterHTML = `<p> Nós não temos uma opção de frete mais rápido disponível :( </p>`
+      if (fasterItem['lead_time'] == cheaperItem['lead_time']) {   
+        fasterHTML = `Nós não temos uma opção de frete mais rápido disponível :(`;
       } else {
-        price_faster = localeBrlToFixed(this.getPrice(faster, is_peso_heavy) * this.peso);
-        fasterHTML = `<p> Frete mais rápido: <strong>Transportadora ${faster['name']} - ${price_faster} - ${faster['lead_time']}</strong></p>`;
+        priceFaster = localeBrlToFixed(this.getPrice(fasterItem, isPesoHeavy) * this.peso);
+        fasterHTML = `Frete mais rápido: <strong>Transportadora ${fasterItem['name']} - ${priceFaster} - ${fasterItem['lead_time']}</strong>`;
       }
+      faster.innerHTML = fasterHTML;
+      cheaper.innerHTML = cheaperHTML;
+      result.style.display = "block";
     }
-
-    result.innerHTML = cheaperHTML + fasterHTML
-    
    },
    
   getPrice(item, heavy) {
@@ -182,5 +206,41 @@ export default {
 
 .title .navbar-brand {
   margin-left: 20px;
+}
+
+.frete {
+  width: 80vh;
+  margin: 8vh 0vh 0vh 10vh;
+}
+.frete h1{
+  font-size: 1.5em;
+}
+
+.frete h1, .frete h2{
+  font-weight: bold;
+}
+.frete > input select {
+  margin: 1vh 1vh 1vh 1vh;
+}
+
+.alternative {
+  border-style: dotted;
+  border-radius: 2px;
+}
+
+#fsec, #csec{
+  margin-left: 10px;
+  display: inline;
+}
+#faster.alternative{
+  padding: 15px;
+  background-color: #c9daf8;
+  border-color: #4883dd;
+}
+
+#cheaper.alternative {
+  padding: 15px;
+  background-color: #d9ead3;
+  border-color: #508a2e;
 }
 </style>
