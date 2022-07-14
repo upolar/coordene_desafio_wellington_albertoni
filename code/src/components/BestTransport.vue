@@ -49,8 +49,6 @@ export default {
   },
   data() {
       const appName = ''
-
-
     return {
       appName,
       selected: null,
