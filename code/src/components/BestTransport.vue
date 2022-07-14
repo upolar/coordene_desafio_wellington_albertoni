@@ -108,16 +108,16 @@ export default {
 
     if (group && this.peso > 0) {
       let is_peso_heavy = this.peso > 100;
-      let price_chp;
+      let price_cheaper; 
 
       let localeBrlToFixed = (val, fixed=2) => { // Arredonda para 2 casas decimais e retorna formatado em BRL Currency
         return Number(val.toFixed(fixed)).toLocaleString("pt-BR", {style:"currency", currency: "BRL"})
       };
 
       cheaper = this.getCheaper(group, is_peso_heavy);
-      price_chp = localeBrlToFixed(this.getPrice(cheaper, is_peso_heavy) * this.peso)
+      price_cheaper = localeBrlToFixed(this.getPrice(cheaper, is_peso_heavy) * this.peso)
 
-      cheaperHTML = `<p>Frete mais barato: <strong>Transportadora ${cheaper['name']} - ${price_chp} - ${cheaper['lead_time']}</strong></p>`
+      cheaperHTML = `<p>Frete mais barato: <strong>Transportadora ${cheaper['name']} - ${price_cheaper} - ${cheaper['lead_time']}</strong></p>`
 
     }
     result.innerHTML = cheaperHTML
