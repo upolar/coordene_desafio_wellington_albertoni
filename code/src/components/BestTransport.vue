@@ -109,13 +109,13 @@ export default {
     if (group && this.peso > 0) {
       let is_peso_heavy = this.peso > 100;
       let price_chp;
-      let locale_brl = (val) => {
-        return val.toLocaleString("pt-BR", {style:"currency", currency: "BRL"})
+
+      let localeBrlToFixed = (val, fixed=2) => { // Arredonda para 2 casas decimais e retorna formatado em BRL Currency
+        return Number(val.toFixed(fixed)).toLocaleString("pt-BR", {style:"currency", currency: "BRL"})
       };
 
       cheaper = this.getCheaper(group, is_peso_heavy);
-      price_chp = Number(this.getPrice(cheaper, is_peso_heavy) * this.peso.toFixed(2))
-      price_chp = locale_brl(price_chp);
+      price_chp = localeBrlToFixed(this.getPrice(cheaper, is_peso_heavy) * this.peso)
 
       cheaperHTML = `<p>Frete mais barato: <strong>Transportadora ${cheaper['name']} - ${price_chp} - ${cheaper['lead_time']}</strong></p>`
 
@@ -124,12 +124,16 @@ export default {
    },
    
   getPrice(item, heavy) {
+    /* Retorna o preço com base no peso 
+      Peso > 100 - retorna o preço const_transport_heavy 
+      Peso < 100 - retorna o preço const_transport_light */
     let type = heavy ? 'cost_transport_heavy' : 'cost_transport_light'
 
     return Number(item[type].replace(/[^0-9.]/g, ""))
   },
 
   getCheaper(group, heavy) {
+    /* Retorna o frete mais barato dentre as transportadoras do grupo */
     let cheaper = group[0]
     let price_chp = this.getPrice(cheaper, heavy)
 
@@ -140,7 +144,6 @@ export default {
         cheaper = group[item]
       }
     }
-
     return cheaper
   },
   },
