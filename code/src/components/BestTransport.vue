@@ -3,6 +3,7 @@
     <div class="title">
         <b-navbar toggleable="lg" type="dark" variant="info">
           <b-navbar-brand class="ml-2">
+            <i name="brand" id="brandico"><img src="../assets/logo.png" width="32px"></i>
             <b>{{ appName }}</b>
           </b-navbar-brand>
         </b-navbar>
@@ -148,7 +149,7 @@ export default {
 
       // Se o tempo do mais rápido e do mais barato forem iguais não existe tempo mais rápido.
       if (fasterItem['lead_time'] == cheaperItem['lead_time']) {   
-        fasterHTML = `Nós não temos uma opção de frete mais rápido disponível :(`;
+        fasterHTML = `<strong>Nós não temos uma opção de frete mais rápido disponível :(</strong>`;
       } else {
         priceFaster = localeBrlToFixed(this.getPrice(fasterItem, isPesoHeavy) * this.peso);
         fasterHTML = `Frete mais rápido: <strong>Transportadora ${fasterItem['name']} - ${priceFaster} - ${fasterItem['lead_time']}</strong>`;
@@ -208,6 +209,9 @@ export default {
   margin-left: 20px;
 }
 
+#brandico {
+  margin: 3vh;
+}
 .frete {
   width: 80vh;
   margin: 8vh 0vh 0vh 10vh;
