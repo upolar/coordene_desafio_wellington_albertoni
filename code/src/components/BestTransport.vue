@@ -23,7 +23,7 @@
 
         <div class="peso mt-3">
           <h3>Peso</h3>
-          <input v-model.number="peso"/>
+          <input v-model.number="weight"/>
         </div>
 
         <b-button v-on:click="getAlternatives" class="mt-3">Analisar</b-button>
@@ -74,7 +74,7 @@ export default {
       appName,
       selected: null,
       transport: [],
-      peso: 0
+      weight: 0
     }
   },
   computed:{
@@ -132,8 +132,8 @@ export default {
     let fasterItem = null;
     
     
-    if (group && this.peso > 0) {
-      let isPesoHeavy = this.peso > 100;
+    if (group && this.weight > 0) {
+      let isHeavy = this.weight > 100;
       let priceCheaper;
       let priceFaster;
       
@@ -141,17 +141,17 @@ export default {
         return Number(val.toFixed(fixed)).toLocaleString("pt-BR", {style:"currency", currency: "BRL"})
       };
 
-      cheaperItem = this.getCheaper(group, isPesoHeavy);
+      cheaperItem = this.getCheaper(group, isHeavy);
       fasterItem = this.getFaster(group);
 
-      priceCheaper = localeBrlToFixed(this.getPrice(cheaperItem, isPesoHeavy) * this.peso);
+      priceCheaper = localeBrlToFixed(this.getPrice(cheaperItem, isHeavy) * this.weight);
       cheaperHTML = `Frete mais barato: <strong>Transportadora ${cheaperItem['name']} - ${priceCheaper} - ${cheaperItem['lead_time']}</strong>`;
 
       // Se o tempo do mais rápido e do mais barato forem iguais não existe tempo mais rápido.
       if (fasterItem['lead_time'] == cheaperItem['lead_time']) {   
         fasterHTML = `<strong>Nós não temos uma opção de frete mais rápido disponível :(</strong>`;
       } else {
-        priceFaster = localeBrlToFixed(this.getPrice(fasterItem, isPesoHeavy) * this.peso);
+        priceFaster = localeBrlToFixed(this.getPrice(fasterItem, isHeavy) * this.weight);
         fasterHTML = `Frete mais rápido: <strong>Transportadora ${fasterItem['name']} - ${priceFaster} - ${fasterItem['lead_time']}</strong>`;
       }
       faster.innerHTML = fasterHTML;
@@ -172,25 +172,26 @@ export default {
   getCheaper(group, heavy) {
     /* Retorna o frete mais barato dentre as transportadoras do grupo */
     let cheaper = group[0];
-    let price_chp = this.getPrice(cheaper, heavy);3
+    let priceChp = this.getPrice(cheaper, heavy);3
 
     for (var item in group) {  
-      let tmp_price = this.getPrice(group[item], heavy)
-      if (tmp_price < price_chp) {
-        price_chp = tmp_price;
+      let tmpPrice = this.getPrice(group[item], heavy)
+      if (tmpPrice < priceChp) {
+        priceChp = tmpPrice;
         cheaper = group[item];
       }
     }
     return cheaper;
   },
   getFaster(group) {
+    /* Retorna o frete mais rápido dentre as transportadoras do grupo */
     let faster = group[0];
-    var lead_time = (val) => {return val['lead_time'].replace(/[^0-9]/g, "")}
+    var leadTime = (val) => {return val['lead_time'].replace(/[^0-9]/g, "")}
 
     for (var item in group) {  
-      let tmp_time = lead_time(group[item]);
+      let tmpTime = leadTime(group[item]);
 
-      if (Number(lead_time(faster)) > Number(tmp_time)) {
+      if (Number(leadTime(faster)) > Number(tmpTime)) {
         faster = group[item];
       }
     }
@@ -213,7 +214,7 @@ export default {
   margin: 3vh;
 }
 .frete {
-  width: 80vh;
+  width: 75%;
   margin: 8vh 0vh 0vh 10vh;
 }
 .frete h1{
